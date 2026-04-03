@@ -62,36 +62,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Successful registration",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "user": {
-                                                    "$ref": "#/components/schemas/User"
-                                                },
-                                                "token": {
-                                                    "type": "string",
-                                                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxIiwianRpIjoiYWIyM2RiOWE..."
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User registered successfully."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Registration details will appear here after execution."
                     },
                     "422": {
                         "description": "Validation error"
@@ -135,68 +106,234 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Successful login",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "user": {
-                                                    "$ref": "#/components/schemas/User"
-                                                },
-                                                "token": {
-                                                    "type": "string",
-                                                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxIiwianRpIjoiYWIyM2RiOWE..."
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User logged in successfully."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Login details will appear here after execution."
                     },
                     "401": {
                         "description": "Invalid credentials"
                     }
                 }
             }
+        },
+        "/api/transactions": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get all transactions (Paginated)",
+                "description": "Fetch a list of all transactions for the authenticated user with pagination support.",
+                "operationId": "indexTransactions",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of transactions"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Add a new transaction",
+                "description": "Creates a transaction (income or expense) and returns the created resource.",
+                "operationId": "storeTransaction",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Grocery Store"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -50.25
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transaction created"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/transactions/{id}": {
+            "put": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Update an existing transaction",
+                "description": "Updates the details of a specific transaction.",
+                "operationId": "updateTransaction",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated Grocery Store"
+                                    },
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -60
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaction updated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Delete a transaction",
+                "description": "Removes a transaction from the database.",
+                "operationId": "deleteTransaction",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction deleted"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/balance": {
+            "get": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Get total balance",
+                "description": "Calculates the sum of all transaction amounts for the authenticated user.",
+                "operationId": "getBalance",
+                "responses": {
+                    "200": {
+                        "description": "Total balance details"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
         "schemas": {
-            "User": {
-                "title": "User",
+            "Transaction": {
+                "title": "Transaction",
                 "properties": {
                     "id": {
                         "type": "integer",
                         "example": 1
                     },
-                    "name": {
+                    "title": {
                         "type": "string",
-                        "example": "John Doe"
+                        "example": "Grocery Store"
                     },
-                    "email": {
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -50.25
+                    },
+                    "type": {
                         "type": "string",
-                        "format": "email",
-                        "example": "user@example.com"
+                        "example": "expense"
                     },
                     "created_at": {
                         "type": "string",
-                        "format": "date-time"
+                        "example": "2026-04-03 10:30:00"
                     }
                 },
                 "type": "object"
+            },
+            "User": {
+                "title": "User"
             }
         },
         "securitySchemes": {
@@ -210,7 +347,11 @@
     "tags": [
         {
             "name": "Authentication",
-            "description": "Authentication"
+            "description": "User authentication endpoints"
+        },
+        {
+            "name": "Transactions",
+            "description": "Income and Expense management endpoints"
         }
     ]
 }

@@ -20,6 +20,8 @@ use OpenApi\Attributes as OA;
     bearerFormat: "JWT",
     scheme: "bearer"
 )]
+#[OA\Tag(name: "Authentication", description: "User authentication endpoints")]
+#[OA\Tag(name: "Transactions", description: "Income and Expense management endpoints")]
 abstract class Controller
 {
 }
